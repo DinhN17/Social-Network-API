@@ -1,4 +1,7 @@
 const { Schema, model } = require('mongoose');
+const dayjs = require('dayjs');
+var advancedFormat = require('dayjs/plugin/advancedFormat');
+dayjs.extend(advancedFormat);
 
 const reactionSchema = new Schema(
     {
@@ -17,7 +20,8 @@ const reactionSchema = new Schema(
         },
         createdAt: {
             type: Date,
-            default: Date.now
+            default: Date.now,
+            get: (createdAtVal) => dayjs(createdAtVal).format('MMM Do, YYYY [at] hh:mm a')
         }
     },
     {
