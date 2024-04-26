@@ -23,7 +23,7 @@ async function getOneUser(req, res) {
         };
         const user = await User.findOne({_id: req.params.userId})
                                     .select('-__v')
-                                    // .populate('thoughts')
+                                    .populate('thoughts')
                                     .populate('friends');
         
         if (!user) {
@@ -54,8 +54,37 @@ async function postUser(req, res) {
     };
 };
 
+// update user
+async function updateUser(req, res) {
+    try {
+        const user = await User.findOneAndUpdate(
+            {_id: req.params.userId},
+            { username: req.body.username, email: req.body.email}
+        );
+
+        if (!user) return res.status(404).json({message: 'No student found!'});
+
+        res.json(user);
+    } catch (error) {
+        res.status(500).json(error);
+    }
+};
+
+// delete a user by ID
+async function deleteUser(req, res) {
+    try {
+        const user = await User.findOneAndDelete({ _id: req.params.userId});
+        if (!user) return res.status(404).json({message: 'User not exist'});
+        return res.json({message: 'User successfully deleted'});
+    } catch (error) {
+        res.status(500).json(error);
+    };
+};
+
 module.exports = {
     getUsers,
     getOneUser,
-    postUser
+    postUser,
+    updateUser,
+    deleteUser
 };
