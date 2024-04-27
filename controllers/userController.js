@@ -1,7 +1,7 @@
 const {ObjectId} = require('mongoose').Types;
 const {User, Thought, Reaction} = require('../models');
 const {isEmail, isAlphanumeric} = require('validator');
-const { post } = require('../models/Reaction');
+// const { post } = require('../models/Reaction');
 
 // Get All users
 async function getUsers(req, res) {
