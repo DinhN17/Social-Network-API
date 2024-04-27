@@ -81,10 +81,68 @@ async function deleteUser(req, res) {
     };
 };
 
+// add a new friend to a user's friend list
+// /api/users/:userId/friends/:friendId
+async function addFriend(req, res) {
+    try {
+        // check if Id is valid
+        if (!ObjectId.isValid(req.params.userId) &&
+            !ObjectId.isValid(req.params.friendId)) {
+            return res.status(400).json({error: 'No user with that ID'});
+        };
+
+        // check if friendId exist
+        const friend = await User.findOne({_id: req.params.friendId});                                    
+        if (!friend) {
+            return res.status(404).json({error: 'No user with that ID'});
+        };
+
+        // add friend to the user's friend list
+        const user = await User.findOneAndUpdate(
+            {_id: req.params.userId},
+            {$addToSet: { friends: new ObjectId(req.params.friendId)}},
+            {new: true}
+        );
+
+        if (!user) return res.status(404).json({message: 'No student found!'});
+
+        res.json(user);
+    } catch (error) {
+        res.status(500).json(error);
+    }
+};
+
+// remove a friend from a user's friend list
+// /api/users/:userId/friends/:friendId
+async function removeFriend(req, res) {
+    try {
+        // check if Id is valid and not friend of userself 
+        if (!ObjectId.isValid(req.params.userId) ||
+            !ObjectId.isValid(req.params.friendId) ||
+            req.params.userId == req.params.friendId) {
+            return res.status(400).json({error: 'No user with that ID'});
+        };
+
+        // remove friend from user's friend list
+        const user = await User.findOneAndUpdate(
+            {_id: req.params.userId},
+            {$pull: {friends: new ObjectId(req.params.friendId)}},
+            {new: true}
+        );
+        if (!user) return res.status(404).json({message: 'No student found!'});
+
+        res.json(user);
+    } catch (error) {
+        res.status(500).json(error);
+    }
+}
+
 module.exports = {
     getUsers,
     getOneUser,
     postUser,
     updateUser,
-    deleteUser
+    deleteUser,
+    addFriend,
+    removeFriend
 };
