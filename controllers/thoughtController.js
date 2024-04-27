@@ -6,7 +6,7 @@ const {isEmpty, isMongoId, isAlphanumeric} = require('validator');
 async function getThoughts(req, res) {
     try {
         const thoughts = await Thought.find();
-        console.log(thoughts);
+        // console.log(thoughts);
         res.status(200).json(thoughts);
     } catch (error) {
         return res.status(500).json(error);
@@ -52,19 +52,22 @@ async function createThought(req, res) {
             isEmpty(thoughtText) || 
             !isAlphanumeric(username)
         ) return res.status(400).json({ message: 'Input data is invalid'});
+
+        // validate userId
+        const user = await User.findOne({_id: userId});
+        if (!user) return res.status(404).json({ message: 'User not found'});
         
         const body = {
             "thoughtText": thoughtText,
             "username": username,
             "reactions": []
         };
-        console.log(body);
+        
         // create Thought
         const thought = await Thought.create(body);
-        console.log(thought);
 
         // add thought to the user's thought list
-        const user = await User.findOneAndUpdate(
+        await User.findOneAndUpdate(
             {_id: userId},
             {$addToSet: { thoughts: thought._id}},
             {new: true}

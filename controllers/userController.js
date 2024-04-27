@@ -1,6 +1,6 @@
 const {ObjectId} = require('mongoose').Types;
 const {User, Thought, Reaction} = require('../models');
-const {isEmail, isAlphanumeric} = require('validator');
+const {isEmail, isAlphanumeric, isMongoId} = require('validator');
 // const { post } = require('../models/Reaction');
 
 // Get All users
@@ -59,7 +59,8 @@ async function updateUser(req, res) {
     try {
         const user = await User.findOneAndUpdate(
             {_id: req.params.userId},
-            { username: req.body.username, email: req.body.email}
+            { username: req.body.username, email: req.body.email},
+            {new: true}
         );
 
         if (!user) return res.status(404).json({message: 'No student found!'});
@@ -73,9 +74,25 @@ async function updateUser(req, res) {
 // delete a user by ID
 async function deleteUser(req, res) {
     try {
-        const user = await User.findOneAndDelete({ _id: req.params.userId});
-        if (!user) return res.status(404).json({message: 'User not exist'});
-        return res.json({message: 'User successfully deleted'});
+        // validate user ID
+        if (!isMongoId(req.params.userId)) {
+            return res.status(400).json({error: 'No user with that ID'});
+        };
+        const user = await User.findOne({_id: req.params.userId})
+                                    .select('-__v')
+                                    .populate('thoughts');
+        if (!user) { 
+            return res.status(404).json({message: 'User not exist'});
+        };
+        
+        //delete thoughts by user
+        if (user.thoughts.length) {
+            const thoughts = await Thought.deleteMany({_id: user.thoughts});
+        };
+    
+        await User.deleteOne({ _id: req.params.userId});
+        
+        res.json({message: 'User successfully deleted'});
     } catch (error) {
         res.status(500).json(error);
     };
