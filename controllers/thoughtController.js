@@ -112,11 +112,15 @@ async function removeThought(req, res) {
         
         // delete Thought
         const thought = await Thought.findOneAndDelete({_id: req.params.thoughtId});
-
-        // delete thought from the user's thought list
         
         if (!thought) {
             return res.status(404).json({error: 'No thought with that ID'});
+        } else {
+            // delete thought from the user's thought list
+            await User.findOneAndUpdate(
+                {username: thought.username},
+                {$pull: {thoughts: thought._id}},
+            );
         };
 
         res.status(200).json({message: 'Thought successfully deleted'});
@@ -129,7 +133,7 @@ async function removeThought(req, res) {
 // /api/thoughts/:thoughtId/reactions
 // {
 //     "reactionBody": "This thought is amazing!",
-//     "username": "lernantino",
+//     "username": "amiko",
 // }
 async function createReaction(req, res) {
     try {
@@ -173,8 +177,15 @@ async function removeReaction(req, res) {
 
         const reaction = await Thought.findOneAndUpdate(
             {_id: req.params.thoughtId},
-            {$pull: {reactions: {reactionId: req.params.reactionId}}},
-        )
+            {$pull: {reactions: {_id: req.params.reactionId}}},
+            {new: true}
+        );
+
+        if (!reaction) {
+            return res.status(404).json({error: 'No reaction with that ID'});
+        };
+
+        res.json(reaction);
     } catch (error) {
         res.status(500).json(error);
     }
