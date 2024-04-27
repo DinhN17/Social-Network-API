@@ -77,7 +77,7 @@ async function createThought(req, res) {
 
 // update thought
 // api/thoughts/:thoughtId
-// { "thoughtText": "Here's a cool thought..."}
+// { "thoughtText": "Here's a great thought..."}
 async function updateThought(req, res) {
     try {
         // validate thoughtId
@@ -88,6 +88,7 @@ async function updateThought(req, res) {
         const thought = await Thought.findOneAndUpdate(
             {_id: req.params.thoughtId},
             {thoughtText: req.body.thoughtText},
+            {new: true}
         );
 
         if (!thought) {
@@ -108,10 +109,17 @@ async function removeThought(req, res) {
         if (!isMongoId(req.params.thoughtId)) {
             return res.status(400).json({error: 'No thought with that ID'});
         };
+        
+        // delete Thought
         const thought = await Thought.findOneAndDelete({_id: req.params.thoughtId});
+
+        // delete thought from the user's thought list
+        
         if (!thought) {
             return res.status(404).json({error: 'No thought with that ID'});
         };
+
+        res.status(200).json({message: 'Thought successfully deleted'});
     } catch (error) {
         res.status(500).json(error);
     };
