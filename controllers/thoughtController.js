@@ -7,6 +7,7 @@ async function getThoughts(req, res) {
     try {
         const thoughts = await Thought.find();
         // console.log(thoughts);
+        console.log(thoughts);
         res.status(200).json(thoughts);
     } catch (error) {
         return res.status(500).json(error);
@@ -28,6 +29,7 @@ async function getOneThought(req, res) {
             return res.status(404).json({error: 'No thought with that ID'});
         };
 
+        console.log(thought);
         res.status(200).json(thought);
     } catch (error) {
         return res.status(500).json(error);
@@ -72,6 +74,7 @@ async function createThought(req, res) {
             {$addToSet: { thoughts: thought._id}},
             {new: true}
         );
+        console.log(thought);
         res.json(thought);
     } catch (error) {
         res.status(500).json(error);
@@ -98,6 +101,7 @@ async function updateThought(req, res) {
             return res.status(404).json({error: 'No thought with that ID'});
         };
 
+        console.log(thought);
         res.json(thought);
     } catch (error) {
         res.status(500).json(error);
@@ -161,6 +165,7 @@ async function createReaction(req, res) {
             return res.status(404).json({error: 'No thought with that ID'});
         };
 
+        console.log(reaction);
         res.json(reaction);
 
     } catch (error) {
@@ -188,6 +193,7 @@ async function removeReaction(req, res) {
             return res.status(404).json({error: 'No reaction with that ID'});
         };
 
+        console.log(reaction);
         res.json(reaction);
     } catch (error) {
         res.status(500).json(error);

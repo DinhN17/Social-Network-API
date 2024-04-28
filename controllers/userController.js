@@ -7,10 +7,11 @@ const {isEmail, isAlphanumeric, isMongoId} = require('validator');
 async function getUsers(req, res) {
     try {
         const users = await User.find();
+        console.log(users);
 
         res.status(200).json(users);
     } catch (error) {
-        console.log(error);
+        // console.log(error);
         return res.status(500).json(error);
     };
 };
@@ -30,6 +31,7 @@ async function getOneUser(req, res) {
             return res.status(404).json({error: 'No user with that ID'});
         };
 
+        console.log(user);
         res.status(200).json(user);
 
     } catch (error) {
@@ -48,6 +50,7 @@ async function postUser(req, res) {
         if (!isEmail(req.body.email) || !isAlphanumeric(req.body.username)) 
             return res.status(400).json({ message: 'Input data is invalid'});
         const user = await User.create(req.body);
+        console.log(user);
         res.json(user);
     } catch (error) {
         res.status(500).json(error);
@@ -65,6 +68,7 @@ async function updateUser(req, res) {
 
         if (!user) return res.status(404).json({message: 'No student found!'});
 
+        console.log(user);
         res.json(user);
     } catch (error) {
         res.status(500).json(error);
@@ -123,6 +127,7 @@ async function addFriend(req, res) {
 
         if (!user) return res.status(404).json({message: 'No student found!'});
 
+        console.log(user);
         res.json(user);
     } catch (error) {
         res.status(500).json(error);
@@ -148,6 +153,7 @@ async function removeFriend(req, res) {
         );
         if (!user) return res.status(404).json({message: 'No student found!'});
 
+        console.log(user);
         res.json(user);
     } catch (error) {
         res.status(500).json(error);
