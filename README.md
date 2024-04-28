@@ -22,7 +22,7 @@ Follow the below steps to install on local computer.
 - Step 4: Import exampole requests from assets/api_client/Insomnia_Social_Network.json.
 - Step 5: Run requests to test.
 
-  ![Video](https://drive.google.com/file/d/1W4T8n4JH8nbBpS40JfOkr8vBYrPaYkgK)
+  [Video](https://drive.google.com/file/d/1W4T8n4JH8nbBpS40JfOkr8vBYrPaYkgK/view)
 
 ## Credits
 
